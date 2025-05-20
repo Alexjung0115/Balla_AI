@@ -124,8 +124,11 @@ print(8)
 wrinkle_model.eval()
 print(9)
 Pore_model = RegressionEfficientNet('Pore').to(device)
+print(10)
 Pore_model.load_state_dict(torch.load("best_weight_model/Pore_best_model_2nd.pth", map_location=device))
+print(11)
 Pore_model.eval()
+print(12)
 Pig_model = RegressionEfficientNet('Pigmentation').to(device)
 Pig_model.load_state_dict(torch.load("best_weight_model/Pigmentation_best_model_2nd.pth", map_location=device))
 Pig_model.eval()
@@ -135,7 +138,7 @@ Sagging_model.eval()
 Dry_model = RegressionEfficientNet('Dry').to(device)
 Dry_model.load_state_dict(torch.load("best_weight_model/Dry_best_model_2nd.pth", map_location=device))
 Dry_model.eval()
-
+print(13)
 # ✅ 입력 전처리 (EfficientNetB0은 224x224 입력 기준)
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
@@ -143,6 +146,7 @@ transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406],
                          [0.229, 0.224, 0.225])
 ])
+print(14)
 part_models = {
     'forehead': [("Wrinkle", wrinkle_model), ("Pigmentation", Pig_model)],
     'glabella': [("Wrinkle", wrinkle_model)],
@@ -153,14 +157,17 @@ part_models = {
     'lips': [("Dry", Dry_model)],
     'chin': [("Sagging", Sagging_model)]
 }
+print(15)
 def predict_score(crop, model):
+    print("predict")
     input_tensor = transform(crop).unsqueeze(0).to(device)
     with torch.no_grad():
         prediction = model(input_tensor)
+    print("predict_fin")
     return prediction.item()
 def convert_results(results_by_part: dict) -> dict:
     output = {}
-
+    print("convert")
     part_name_map = {
         "forehead": "Forehead",
         "glabella": "Glabella",
@@ -197,41 +204,44 @@ def convert_results(results_by_part: dict) -> dict:
             if key_prefix and part_label:
                 key = f"{key_prefix}{part_label}{suffix}"
                 output[key] = round(raw_score)
-
+    print("convert_fin")
     return output
 # 홈 페이지 (GET 요청)
 @app.get("/", response_class=HTMLResponse)
 async def form_get(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+    print(16)
 
 # 이미지 업로드 핸들러 (POST 요청)
 @app.post("/analyze")
 async def analyze_image(file: UploadFile = File(...)):
+    print(17)
     # 고유 파일명 생성
     img_id = str(uuid.uuid4())
+    print(18)
     input_path = f"static/input_{img_id}.jpg"
     output_path = f"static/output_{img_id}.jpg"
-    final_output_path = f"static/finaloutput_{img_id}.jpg"
+    print(19)
 
     # 저장
     with open(input_path, "wb") as f:
         f.write(await file.read())
-
+   
     img_path = input_path
     results = model1(img_path)
-
+    print(21)
     boxes = results[0].boxes
     cls = boxes.cls.cpu().numpy()
     xyxy = boxes.xyxy.cpu().numpy()
     conf = boxes.conf.cpu().numpy()
-
+    print(22)
     face_indices = [i for i, (c, cf) in enumerate(zip(cls, conf)) if c == 1 and cf >= 0.7]
     eye_indices = [i for i, c in enumerate(cls) if c == 0]
-
+    print(23)
     img = cv2.imread(img_path)
     result_msg = ""
     show_image = False
-
+    print(24)
     if face_indices:
         face_boxes = [xyxy[i] for i in face_indices]
         if len(face_boxes) == 1:
