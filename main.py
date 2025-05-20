@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Request, Form
+from fastapi import FastAPI, File, UploadFile, Request, Form,status
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -284,21 +284,27 @@ async def analyze_image(file: UploadFile = File(...)):
 
                         result_msg = final_result
                         show_image = True
+                        status_code = status.HTTP_200_OK
                     else:
                         result_msg = "유의미한 결과가 없습니다. 이미지를 다시 선택해주세요."
+                        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
                 else:
                     result_msg = "눈이 2개 이상 탐지되지 않았습니다. 다시 사진을 선택해주세요."
+                    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
             else:
                 result_msg = "눈이 탐지되지 않았습니다. 다시 사진을 선택해주세요."
+                status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
         else:
             result_msg = "얼굴이 2개 이상 탐지되었습니다. 다시 사진을 선택해주세요."
+            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
     else:
         result_msg = "얼굴이 탐지되지 않았습니다. 다시 사진을 선택해주세요."
+        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    return JSONResponse({
+    return JSONResponse(content={
         "result": result_msg,
         "image_url": output_path if show_image else ""
-    })
+    },status_code = status_code)
 if __name__ =="__main__":
     uvicorn.run(app,host='localhost',port=8000)
     
