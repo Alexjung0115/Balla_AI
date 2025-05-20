@@ -23,11 +23,15 @@ import json
 templates = Jinja2Templates(directory='templates')
 
 app  = FastAPI()
+print(1)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+print(2)
 device = "cuda" if torch.cuda.is_available() else "cpu"
+print(3)
 model1 = YOLO("best_weight_model/newfaceeye.pt").to(device)
+print(4)
 model2 = YOLO("best_weight_model/bestyolo8n_withoutacne.pt").to(device)
-
+print(5)
 
 class WrinkleRegressionEfficientNet(nn.Module):
     def __init__(self):
@@ -112,9 +116,13 @@ class RegressionEfficientNet(nn.Module):
         elif self.label =='Pigmentation':
             x = self.act(x) * 7.0  # 등급 범위에 맞게 조절
         return x
+print(6)
 wrinkle_model = RegressionEfficientNet('Wrinkle').to(device)
+print(7)
 wrinkle_model.load_state_dict(torch.load("best_weight_model/best_wrinkle_model.pth", map_location=device))
+print(8)
 wrinkle_model.eval()
+print(9)
 Pore_model = RegressionEfficientNet('Pore').to(device)
 Pore_model.load_state_dict(torch.load("best_weight_model/Pore_best_model_2nd.pth", map_location=device))
 Pore_model.eval()
