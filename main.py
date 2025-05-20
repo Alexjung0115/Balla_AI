@@ -24,7 +24,7 @@ templates = Jinja2Templates(directory='templates')
 
 app  = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
-device = "cpu" if torch.cuda.is_available() else "device"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 model1 = YOLO("best_weight_model/newfaceeye.pt").to(device)
 model2 = YOLO("best_weight_model/bestyolo8n_withoutacne.pt").to(device)
 
