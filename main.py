@@ -297,7 +297,8 @@ async def analyze_image(file: UploadFile = File(...)):
                             if part_results:
                                 results_by_part[part] = part_results
                                 
-                            final_result = convert_results(results_by_part)
+                            #final_result = convert_results(results_by_part)
+                        final_result = convert_results(results_by_part)
 
 
                         result_msg = final_result
