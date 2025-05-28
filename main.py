@@ -324,6 +324,6 @@ async def analyze_image(file: UploadFile = File(...)):
         "image_url": output_path if show_image else ""
     },status_code = status_code)
 if __name__ =="__main__":
-    uvicorn.run(app,host='localhost',port=8000)
+    uvicorn.run(app,host='3.148.242.36',port=8000)
     
     
