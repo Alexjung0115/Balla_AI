@@ -18,11 +18,25 @@ import uuid
 import torchvision.transforms as transforms
 import torchvision.models as models
 import json
+from fastapi.middleware.cors import CORSMiddleware
 
 
 templates = Jinja2Templates(directory='templates')
 
 app  = FastAPI()
+origins = [
+    "http://localhost:5173",  # React 개발 서버
+    "http://3.148.242.36:8000",  # (필요 시)
+]
+
+# CORS 미들웨어 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,             # 또는 ["*"]로 전체 허용 가능 (주의)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 print(1)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 print(2)
