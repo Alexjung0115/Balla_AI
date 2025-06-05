@@ -274,8 +274,12 @@ async def analyze_image(file: UploadFile = File(...)):
                     pil_img = Image.fromarray(img_rgb)
 
                     results2 = model2(pil_img)
-                    if results2[0].boxes is not None and len(results2[0].boxes) > 0:
+                    #위에꺼 안되면 다시 삭제할 것것
+                    if boxes2 is not None and any(cls.item() != 0 for cls in boxes2.cls):
                         results2[0].save(filename=output_path)
+                    
+                    # if results2[0].boxes is not None and len(results2[0].boxes) > 0:
+                    #     results2[0].save(filename=output_path)
                         
                         boxes2 = results2[0].boxes
 
@@ -312,10 +316,8 @@ async def analyze_image(file: UploadFile = File(...)):
                             if part_results:
                                 results_by_part[part] = part_results
                                 
-                            #final_result = convert_results(results_by_part)
-                        final_result = "얼굴 부위를 식별하지 못했습니다."
-
-
+                            final_result = convert_results(results_by_part)
+                        
                         result_msg = final_result
                         show_image = True
                         status_code = status.HTTP_200_OK
