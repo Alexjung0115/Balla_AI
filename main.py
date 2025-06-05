@@ -300,7 +300,7 @@ async def analyze_image(file: UploadFile = File(...)):
                         result_msg = final_result
                         show_image = True
                         if all(len(indices) == 0 for indices in index_mapping.values()):
-                            result_msg= "얼굴 부위 식별 불가"
+                            result_msg= "얼굴 부위 식별 불가능합니다. 이미지를 다시 선택해주세요"
                             status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
                     else:
                         result_msg = "유의미한 결과가 없습니다. 이미지를 다시 선택해주세요."
