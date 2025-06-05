@@ -300,6 +300,7 @@ async def analyze_image(file: UploadFile = File(...)):
                         print(index_mapping)        
                         final_result = convert_results(results_by_part)
                         result_msg = final_result
+                        show_image = True
                     else:
                         result_msg = "유의미한 결과가 없습니다. 이미지를 다시 선택해주세요."
                         status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
