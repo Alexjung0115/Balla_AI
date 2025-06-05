@@ -221,6 +221,7 @@ async def analyze_image(file: UploadFile = File(...)):
     img_id = str(uuid.uuid4())
     input_path = f"static/input_{img_id}.jpg"
     output_path = f"static/output_{img_id}.jpg"
+    status_code = status.HTTP_200_OK
 
     # 저장
     with open(input_path, "wb") as f:
