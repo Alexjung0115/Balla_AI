@@ -260,7 +260,7 @@ async def analyze_image(file: UploadFile = File(...)):
                     results2 = model2(pil_img)
                     
                     if results2[0].boxes is not None and len(results2[0].boxes) > 0:
-                         results2[0].save(filename=output_path)
+                        results2[0].save(filename=output_path)
                         
                         boxes2 = results2[0].boxes
 
