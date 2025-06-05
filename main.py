@@ -313,7 +313,7 @@ async def analyze_image(file: UploadFile = File(...)):
                                 results_by_part[part] = part_results
                                 
                             #final_result = convert_results(results_by_part)
-                        final_result = convert_results(results_by_part)
+                        final_result = "얼굴 부위를 식별하지 못했습니다."
 
 
                         result_msg = final_result
@@ -322,18 +322,23 @@ async def analyze_image(file: UploadFile = File(...)):
                     else:
                         result_msg = "유의미한 결과가 없습니다. 이미지를 다시 선택해주세요."
                         status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+                        final_result = result_msg
                 else:
                     result_msg = "눈이 2개 이상 탐지되지 않았습니다. 다시 사진을 선택해주세요."
                     status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+                    final_result = result_msg
             else:
                 result_msg = "눈이 탐지되지 않았습니다. 다시 사진을 선택해주세요."
                 status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+                final_result = result_msg
         else:
             result_msg = "얼굴이 2개 이상 탐지되었습니다. 다시 사진을 선택해주세요."
             status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+            final_result = result_msg
     else:
         result_msg = "얼굴이 탐지되지 않았습니다. 다시 사진을 선택해주세요."
         status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        final_result = result_msg
 
     return JSONResponse(content={
         "result": result_msg,
