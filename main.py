@@ -214,18 +214,13 @@ def convert_results(results_by_part: dict) -> dict:
 @app.get("/", response_class=HTMLResponse)
 async def form_get(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-    print(16)
-
 # 이미지 업로드 핸들러 (POST 요청)
 @app.post("/analyze")
 async def analyze_image(file: UploadFile = File(...)):
-    print(17)
     # 고유 파일명 생성
     img_id = str(uuid.uuid4())
-    print(18)
     input_path = f"static/input_{img_id}.jpg"
     output_path = f"static/output_{img_id}.jpg"
-    print(19)
 
     # 저장
     with open(input_path, "wb") as f:
@@ -271,8 +266,8 @@ async def analyze_image(file: UploadFile = File(...)):
 
                         cls2 = boxes2.cls.cpu().numpy()
                         xyxy2 = boxes2.xyxy.cpu().numpy()
-                        if any(cls.item() != 0 for cls in boxes2.cls:
-                            index_mapping = {
+
+                        index_mapping = {
                                 'forehead': [i for i, c in enumerate(cls2) if c == 1],
                                 'glabella': [i for i, c in enumerate(cls2) if c == 2],
                                 'l_periocular': [i for i, c in enumerate(cls2) if c == 3],
@@ -281,36 +276,29 @@ async def analyze_image(file: UploadFile = File(...)):
                                 'r_cheek': [i for i, c in enumerate(cls2) if c == 6],
                                 'lips': [i for i, c in enumerate(cls2) if c == 7],
                                 'chin': [i for i, c in enumerate(cls2) if c == 8],
-                            }
-                            results_by_part = {}
+                        }
+                        results_by_part = {}
     
     
                             # === 각 부위별로 crop 및 예측 수행 ===
-                            for part, indices in index_mapping.items():
-                                if not indices:
-                                    continue  # 해당 부위가 탐지되지 않으면 skip
+                        for part, indices in index_mapping.items():
+                            if not indices:
+                                continue  # 해당 부위가 탐지되지 않으면 skip
     
                                 # 첫 번째 탐지된 부위 기준으로 crop
-                                x1, y1, x2, y2 = map(int, xyxy2[indices[0]])
-                                crop = pil_img.crop((x1, y1, x2, y2))
+                            x1, y1, x2, y2 = map(int, xyxy2[indices[0]])
+                            crop = pil_img.crop((x1, y1, x2, y2))
     
-                                part_results = {}
-                                for label, model in part_models.get(part, []):
-                                    score = predict_score(crop, model)
-                                    part_results[label] = round(score, 2)
+                            part_results = {}
+                            for label, model in part_models.get(part, []):
+                                score = predict_score(crop, model)
+                                part_results[label] = round(score, 2)
     
-                                if part_results:
-                                    results_by_part[part] = part_results
-                                    
-                                final_result = convert_results(results_by_part)
-                            
-                            result_msg = final_result
-                            show_image = True
-                            status_code = status.HTTP_200_OK
-                        else:
-                            result_msg = "피부를 식별하지 못했습니다."
-                            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
-                            final_result = result_msg
+                            if part_results:
+                                results_by_part[part] = part_results
+                        print(index_mapping)        
+                        final_result = convert_results(results_by_part)
+                        result_msg = final_result
                     else:
                         result_msg = "유의미한 결과가 없습니다. 이미지를 다시 선택해주세요."
                         status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
