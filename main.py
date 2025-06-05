@@ -279,9 +279,7 @@ async def analyze_image(file: UploadFile = File(...)):
                                 'chin': [i for i, c in enumerate(cls2) if c == 8],
                         }
                         results_by_part = {}
-    
-    
-                            # === 각 부위별로 crop 및 예측 수행 ===
+                         # === 각 부위별로 crop 및 예측 수행 ===
                         for part, indices in index_mapping.items():
                             if not indices:
                                 continue  # 해당 부위가 탐지되지 않으면 skip
@@ -301,6 +299,9 @@ async def analyze_image(file: UploadFile = File(...)):
                         final_result = convert_results(results_by_part)
                         result_msg = final_result
                         show_image = True
+                        if all(len(indices) == 0 for indices in index_mapping.values()):
+                            result_msg= "얼굴 부위 식별 불가"
+                            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
                     else:
                         result_msg = "유의미한 결과가 없습니다. 이미지를 다시 선택해주세요."
                         status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
