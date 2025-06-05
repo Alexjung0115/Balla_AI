@@ -27,6 +27,7 @@ app  = FastAPI()
 origins = [
     "http://localhost:5173",  # React 개발 서버
     "http://3.148.242.36:8000",  # (필요 시)
+    "https://balladream.shop" #프론트
 ]
 
 # CORS 미들웨어 추가
