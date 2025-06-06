@@ -46,6 +46,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 model1 = YOLO("best_weight_model/newfaceeye.pt").to(device)
 
 model2 = YOLO("best_weight_model/bestyolo8n_withoutacne.pt").to(device)
+model3 = YOLO("best_weight_model/face_segmentation.pt").to(device)
 
 class WrinkleRegressionEfficientNet(nn.Module):
     def __init__(self):
@@ -258,7 +259,8 @@ async def analyze_image(file: UploadFile = File(...)):
                     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                     pil_img = Image.fromarray(img_rgb)
 
-                    results2 = model2(pil_img)
+                    # results2 = model2(pil_img)
+                    results2 = model3(pil_img)
                     
                     if results2[0].boxes is not None and len(results2[0].boxes) > 0:
                         results2[0].save(filename=output_path)
@@ -268,15 +270,25 @@ async def analyze_image(file: UploadFile = File(...)):
                         cls2 = boxes2.cls.cpu().numpy()
                         xyxy2 = boxes2.xyxy.cpu().numpy()
 
+                        # index_mapping = {
+                        #         'forehead': [i for i, c in enumerate(cls2) if c == 1],
+                        #         'glabella': [i for i, c in enumerate(cls2) if c == 2],
+                        #         'l_periocular': [i for i, c in enumerate(cls2) if c == 3],
+                        #         'r_periocular': [i for i, c in enumerate(cls2) if c == 4],
+                        #         'l_cheek': [i for i, c in enumerate(cls2) if c == 5],
+                        #         'r_cheek': [i for i, c in enumerate(cls2) if c == 6],
+                        #         'lips': [i for i, c in enumerate(cls2) if c == 7],
+                        #         'chin': [i for i, c in enumerate(cls2) if c == 8],
+                        # }
                         index_mapping = {
-                                'forehead': [i for i, c in enumerate(cls2) if c == 1],
-                                'glabella': [i for i, c in enumerate(cls2) if c == 2],
-                                'l_periocular': [i for i, c in enumerate(cls2) if c == 3],
-                                'r_periocular': [i for i, c in enumerate(cls2) if c == 4],
-                                'l_cheek': [i for i, c in enumerate(cls2) if c == 5],
-                                'r_cheek': [i for i, c in enumerate(cls2) if c == 6],
-                                'lips': [i for i, c in enumerate(cls2) if c == 7],
-                                'chin': [i for i, c in enumerate(cls2) if c == 8],
+                                'forehead': [i for i, c in enumerate(cls2) if c == 2],
+                                'glabella': [i for i, c in enumerate(cls2) if c == 3],
+                                'l_periocular': [i for i, c in enumerate(cls2) if c == 4],
+                                'r_periocular': [i for i, c in enumerate(cls2) if c == 5],
+                                'l_cheek': [i for i, c in enumerate(cls2) if c == 6],
+                                'r_cheek': [i for i, c in enumerate(cls2) if c == 7],
+                                'lips': [i for i, c in enumerate(cls2) if c == 8],
+                                'chin': [i for i, c in enumerate(cls2) if c == 9],
                         }
                         results_by_part = {}
                          # === 각 부위별로 crop 및 예측 수행 ===
